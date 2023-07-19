@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Mango Test</string>
+
+    <string name="no_connection">No connection</string>
+    <string name="timeout">Timeout</string>
+    <string name="unauthorized">Unauthorized</string>
+    <string name="not_found">Not found</string>
+    <string name="invalid_data">Invalid data entered</string>
+    <string name="server_error">Error with connecting to server. Code: %d</string>
+    <string name="unknown_error">Unknown error</string>
 </resources>
