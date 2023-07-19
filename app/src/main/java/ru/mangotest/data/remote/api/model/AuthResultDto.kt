@@ -9,7 +9,7 @@ data class AuthResultDto(
     @SerialName("access_token")
     val accessToken: String,
     @SerialName("is_user_exists")
-    val isUserExists: Boolean,
+    val doesUserExist: Boolean,
     @SerialName("refresh_token")
     val refreshToken: String,
     @SerialName("user_id")
