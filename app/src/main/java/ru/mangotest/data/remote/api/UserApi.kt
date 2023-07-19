@@ -9,10 +9,10 @@ import ru.mangotest.data.remote.api.model.user.UserInfoResponse
 
 interface UserApi {
 
-    @GET("users/me")
+    @GET("users/me/")
     suspend fun getCurrentUser(): UserDto
 
-    @PUT("users/me")
+    @PUT("users/me/")
     suspend fun changeUserInfo(
         @Body userInfo: UserInfoRequest
     ): UserInfoResponse

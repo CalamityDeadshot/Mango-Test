@@ -15,26 +15,26 @@ import ru.mangotest.data.remote.api.model.UserRegistrationRequest
 
 interface AuthenticationApi {
 
-    @POST("users/register")
+    @POST("users/register/")
     suspend fun registerUser(
         @Body request: UserRegistrationRequest
     ): UserRegistrationDto
 
-    @POST("users/send-auth-code")
+    @POST("users/send-auth-code/")
     suspend fun sendAuthenticationCode(
         @Body phoneRequest: UserPhone
     ): UserPhoneDto
 
-    @POST("users/check-auth-code")
+    @POST("users/check-auth-code/")
     suspend fun checkAuthCode(
         @Body authCode: UserAuthCode
     ): AuthResultDto
 
-    @POST("users/refresh-token")
+    @POST("users/refresh-token/")
     suspend fun refreshAccessToken(
         @Body refreshToken: RefreshTokenRequest
     ): RefreshTokenDto
 
-    @GET("users/check-jwt")
+    @GET("users/check-jwt/")
     suspend fun checkAuthentication(): Response<Unit>
 }
