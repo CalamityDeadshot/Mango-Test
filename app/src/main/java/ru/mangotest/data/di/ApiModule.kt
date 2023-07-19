@@ -11,8 +11,12 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
+import retrofit2.create
+import ru.mangotest.BuildConfig
 import ru.mangotest.core.ResponseHandler
 import ru.mangotest.data.remote.AuthInterceptor
+import ru.mangotest.data.remote.api.AuthenticationApi
+import ru.mangotest.data.remote.api.UserApi
 import javax.inject.Singleton
 
 @Module
@@ -46,8 +50,8 @@ object ApiModule {
     fun provideRetrofit(
         client: OkHttpClient,
         converter: Converter.Factory
-    ) = Retrofit.Builder()
-        .baseUrl("")
+    ): Retrofit = Retrofit.Builder()
+        .baseUrl(BuildConfig.BASE_URL)
         .client(client)
         .addConverterFactory(converter)
         .build()
@@ -55,4 +59,12 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideResponseHandler() = ResponseHandler()
+
+    @Provides
+    @Singleton
+    fun provideAuthApi(retrofit: Retrofit): AuthenticationApi = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideUserApi(retrofit: Retrofit): UserApi = retrofit.create()
 }
