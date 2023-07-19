@@ -1,0 +1,58 @@
+package ru.mangotest.data.repository
+
+import ru.mangotest.core.Resource
+import ru.mangotest.core.ResponseHandler
+import ru.mangotest.data.local.toAuthState
+import ru.mangotest.data.remote.api.AuthenticationApi
+import ru.mangotest.data.remote.api.model.AuthResultDto
+import ru.mangotest.data.remote.api.model.RefreshTokenRequest
+import ru.mangotest.data.remote.api.model.UserAuthCode
+import ru.mangotest.data.remote.api.model.UserPhone
+import ru.mangotest.data.remote.api.model.UserRegistrationRequest
+import ru.mangotest.domain.local.AuthStateStorage
+import ru.mangotest.domain.repository.AuthenticationRepository
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class AuthenticationRepositoryImpl @Inject constructor(
+    private val authStateStorage: AuthStateStorage,
+    private val handler: ResponseHandler,
+    private val authApi: AuthenticationApi
+): AuthenticationRepository {
+    override suspend fun registerUser(request: UserRegistrationRequest) = handler {
+        authApi.registerUser(request)
+    }
+
+    override suspend fun requestAuthCode(phone: UserPhone) = handler {
+        authApi.sendAuthenticationCode(phone)
+    }
+
+    override suspend fun checkAuthCode(authCode: UserAuthCode): Resource<AuthResultDto> = handler {
+        authApi.checkAuthCode(authCode)
+    }.also { resource ->
+        resource.handle(
+            onSuccess = {
+                authStateStorage.updateAuthState(it.toAuthState())
+            }
+        )
+    }
+
+    override suspend fun requestTokenRefreshment(refreshToken: RefreshTokenRequest) = handler {
+        authApi.refreshAccessToken(refreshToken)
+    }.also { resource ->
+        resource.handle(
+            onSuccess = {
+                authStateStorage.updateAuthState(it.toAuthState())
+            }
+        )
+    }
+
+    override suspend fun checkAuthentication() = handler {
+        authApi.checkAuthentication()
+    }
+
+    override suspend fun endSession() =
+        authStateStorage.deleteAuthState()
+
+}
