@@ -260,4 +260,6 @@
     <string name="search">Поиск…</string>
     <string name="select_country">Выберите страну</string>
     <string name="invalid_number">Неверный формат номера телефона</string>
+    <string name="reqest_auth_code">Отправить код подтверждения</string>
+    <string name="code_sent">Пожалуйста, введите отправленный код подтверждения:</string>
 </resources>

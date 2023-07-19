@@ -10,6 +10,8 @@
     <string name="unknown_error">Unknown error</string>
     <string name="phone_number">Phone number</string>
     <string name="please_sign_in">Please sign in</string>
+    <string name="reqest_auth_code">Send code</string>
+    <string name="code_sent">We sent a code to your phone number. Please enter it below:</string>
 
     <!--  Countries. Credit: https://github.com/jump-sdk/jetpack_compose_country_code_picker_emoji -->
     <string name="andora">Andorra</string>

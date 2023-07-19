@@ -6,5 +6,11 @@ data class AuthenticationScreenState(
     val selectedCountry: CountryData,
     val phoneNumber: String = "",
     val hasRequestedCode: Boolean = false,
-    val authenticationCode: String = ""
-)
+    val isRequestingCode: Boolean = false,
+    val authenticationCode: String = "",
+
+    val isCheckingAuthCode: Boolean = false
+) {
+    val fullPhoneNumber: String
+        get() = "${selectedCountry.countryPhoneCode}$phoneNumber"
+}
