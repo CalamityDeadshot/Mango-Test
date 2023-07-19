@@ -13,8 +13,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import ru.mangotest.domain.local.AuthStateStorage
 import javax.inject.Inject
+import javax.inject.Singleton
 
-
+@Singleton
 class AuthStateStorageImpl @Inject constructor(
     @ApplicationContext context: Context
 ): AuthStateStorage {
@@ -29,10 +30,10 @@ class AuthStateStorageImpl @Inject constructor(
     )
     private val dataStore = context.dataStore
 
-    private val Preferences.authState: AuthState?
+    private val Preferences.authState: AuthState
         get() = this[AUTH_STATE_KEY]?.let {
             Json.Default.decodeFromString(it)
-        }
+        } ?: AuthState.Empty
 
     override val hasTokenExpired: Boolean
         get() = false
@@ -48,7 +49,7 @@ class AuthStateStorageImpl @Inject constructor(
 
     override suspend fun deleteAuthState() {
         dataStore.edit {
-            it.remove(AUTH_STATE_KEY)
+            it[AUTH_STATE_KEY] = Json.Default.encodeToString(AuthState.Empty)
         }
     }
 }

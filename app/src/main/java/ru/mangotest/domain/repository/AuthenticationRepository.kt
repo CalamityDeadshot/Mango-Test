@@ -1,7 +1,9 @@
 package ru.mangotest.domain.repository
 
+import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import ru.mangotest.core.Resource
+import ru.mangotest.data.local.AuthState
 import ru.mangotest.data.remote.api.model.AuthResultDto
 import ru.mangotest.data.remote.api.model.RefreshTokenDto
 import ru.mangotest.data.remote.api.model.RefreshTokenRequest
@@ -12,6 +14,8 @@ import ru.mangotest.data.remote.api.model.UserRegistrationDto
 import ru.mangotest.data.remote.api.model.UserRegistrationRequest
 
 interface AuthenticationRepository {
+
+    val authState: Flow<AuthState?>
 
     suspend fun registerUser(
         request: UserRegistrationRequest

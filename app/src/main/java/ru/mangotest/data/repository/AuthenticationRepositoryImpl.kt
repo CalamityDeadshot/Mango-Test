@@ -1,7 +1,9 @@
 package ru.mangotest.data.repository
 
+import kotlinx.coroutines.flow.Flow
 import ru.mangotest.core.Resource
 import ru.mangotest.core.ResponseHandler
+import ru.mangotest.data.local.AuthState
 import ru.mangotest.data.local.toAuthState
 import ru.mangotest.data.remote.api.AuthenticationApi
 import ru.mangotest.data.remote.api.model.AuthResultDto
@@ -20,6 +22,9 @@ class AuthenticationRepositoryImpl @Inject constructor(
     private val handler: ResponseHandler,
     private val authApi: AuthenticationApi
 ): AuthenticationRepository {
+
+    override val authState: Flow<AuthState?> = authStateStorage.authState
+
     override suspend fun registerUser(request: UserRegistrationRequest) = handler {
         authApi.registerUser(request)
     }
