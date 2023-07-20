@@ -39,7 +39,7 @@ fun CountrySelectionBottomSheet(
     val navController = LocalNavController.current
 
     CountrySelectionBottomSheetContent(
-        selectedCountry = viewModel.state.selectedCountry,
+        selectedCountry = viewModel.authenticationState.selectedCountry,
         onCountrySelected = {
             viewModel.onEvent(AuthenticationEvent.OnCountrySelected(it))
             navController.popBackStack()

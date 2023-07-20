@@ -262,4 +262,11 @@
     <string name="invalid_number">Неверный формат номера телефона</string>
     <string name="reqest_auth_code">Отправить код подтверждения</string>
     <string name="code_sent">Пожалуйста, введите отправленный код подтверждения:</string>
+    <string name="tell_us_more">Расскажите нам о себе</string>
+    <string name="name">Расскажите о себе</string>
+    <string name="register">Зарегистрироваться</string>
+    <string name="user_name">Имя пользователя</string>
+    <string name="username_invalid">Имя пользователя должно состоять только из латинских букв, цифр, тире (-) и нижних подчёркиваний (_)</string>
+    <string name="username_empty">Имя пользователя пусто</string>
+    <string name="name_empty">Пожалуйста, введите своё имя</string>
 </resources>

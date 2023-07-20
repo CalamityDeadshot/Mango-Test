@@ -3,6 +3,7 @@ package ru.mangotest.data.local
 import kotlinx.serialization.Serializable
 import ru.mangotest.data.remote.api.model.AuthResultDto
 import ru.mangotest.data.remote.api.model.RefreshTokenDto
+import ru.mangotest.data.remote.api.model.UserRegistrationDto
 
 @Serializable
 data class AuthState(
@@ -29,4 +30,9 @@ fun AuthResultDto.toAuthState() =
 fun RefreshTokenDto.toAuthState() =
     AuthState(
         accessToken, refreshToken, userId, true
+    )
+
+fun UserRegistrationDto.toAuthState() =
+    AuthState(
+        accessToken, refreshToken, userId
     )

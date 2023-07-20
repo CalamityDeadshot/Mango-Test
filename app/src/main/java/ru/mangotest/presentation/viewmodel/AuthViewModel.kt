@@ -18,43 +18,59 @@ import ru.mangotest.core.countries.countryDataMap
 import ru.mangotest.core.countries.russia
 import ru.mangotest.data.remote.api.model.UserAuthCode
 import ru.mangotest.data.remote.api.model.UserPhone
+import ru.mangotest.data.remote.api.model.UserRegistrationRequest
 import ru.mangotest.domain.repository.AuthenticationRepository
+import ru.mangotest.domain.use_case.NameValidationUseCase
+import ru.mangotest.domain.use_case.UsernameValidationUseCase
+import ru.mangotest.presentation.navigation.AppScreen
 import ru.mangotest.presentation.screen.auth.AuthenticationEvent
+import ru.mangotest.presentation.screen.auth.RegistrationEvent
+import ru.mangotest.presentation.util.UiEvent
 import ru.mangotest.presentation.viewmodel.state.auth.AuthenticationScreenState
+import ru.mangotest.presentation.viewmodel.state.auth.RegistrationScreenState
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val repo: AuthenticationRepository,
+    private val validateUsername: UsernameValidationUseCase,
+    private val validateName: NameValidationUseCase,
     @ApplicationContext context: Context // ugh
 ): ViewModel() {
     val authState = repo.authState
 
-    var state by mutableStateOf(
+    var authenticationState by mutableStateOf(
         AuthenticationScreenState(
             selectedCountry = countryDataMap[context.countryCode] ?: russia
         )
     )
         private set
 
+    var registrationState by mutableStateOf(
+        RegistrationScreenState()
+    )
+
     private val _uiMessages = MutableSharedFlow<UiText>()
     val uiMessages = _uiMessages.asSharedFlow()
+
+    private val _uiEvents = MutableSharedFlow<UiEvent>()
+    val uiEvents = _uiEvents.asSharedFlow()
 
     fun onEvent(event: AuthenticationEvent) {
         when (event) {
             is AuthenticationEvent.OnCountrySelected -> {
-                state = state.copy(
+                authenticationState = authenticationState.copy(
                     selectedCountry = event.country
                 )
             }
             AuthenticationEvent.OnRequestCode -> {
-                state = state.copy(
+                authenticationState = authenticationState.copy(
                     isRequestingCode = true
                 )
                 requestAuthCode()
             }
             is AuthenticationEvent.PhoneNumberChanged -> {
-                state = state.copy(
+                authenticationState = authenticationState.copy(
                     phoneNumber = event.phoneNumber
                 )
             }
@@ -62,9 +78,42 @@ class AuthViewModel @Inject constructor(
                 if (event.authCode.length == 6) {
                     checkAuthCode()
                 }
-                state = state.copy(
+                authenticationState = authenticationState.copy(
                     authenticationCode = event.authCode
                 )
+            }
+        }
+    }
+
+    fun onEvent(event: RegistrationEvent) {
+        when (event) {
+            is RegistrationEvent.OnNameChanged -> {
+                registrationState = registrationState.copy(
+                    name = event.name,
+                    nameError = validateName(event.name)
+                )
+            }
+            is RegistrationEvent.OnUsernameChanged -> {
+                registrationState = registrationState.copy(
+                    username = event.username,
+                    usernameError = validateUsername(event.username)
+                )
+            }
+            RegistrationEvent.OnRegister -> {
+                val nameValidationResult = validateName(registrationState.name)
+                val usernameValidationResult = validateUsername(registrationState.username)
+
+                if (nameValidationResult != null || usernameValidationResult != null) {
+                    registrationState = registrationState.copy(
+                        nameError = nameValidationResult,
+                        usernameError = usernameValidationResult
+                    )
+                    return
+                }
+                registrationState = registrationState.copy(
+                    isRegistering = true
+                )
+                register()
             }
         }
     }
@@ -73,12 +122,12 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             repo.requestAuthCode(
                 UserPhone(
-                    phone = "${state.selectedCountry.countryPhoneCode}${state.phoneNumber}"
+                    phone = "${authenticationState.selectedCountry.countryPhoneCode}${authenticationState.phoneNumber}"
                 )
             ).handle(
                 onSuccess = {
                     if (it.isSuccess) {
-                        state = state.copy(
+                        authenticationState = authenticationState.copy(
                             isRequestingCode = false,
                             hasRequestedCode = true
                         )
@@ -92,21 +141,48 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun checkAuthCode() = viewModelScope.launch(Dispatchers.IO) {
+        authenticationState = authenticationState.copy(
+            isCheckingAuthCode = true
+        )
         repo.checkAuthCode(
             UserAuthCode(
-                code = state.authenticationCode,
-                phone = state.fullPhoneNumber
+                code = authenticationState.authenticationCode,
+                phone = authenticationState.fullPhoneNumber
             )
         ).handle(
             onSuccess = {
-
+                if (!it.doesUserExist) {
+                    _uiEvents.emit(
+                        UiEvent.Navigate(AppScreen.Registration.route)
+                    )
+                }
             },
             onError = {
                 _uiMessages.emit(it)
-                state = state.copy(
+                authenticationState = authenticationState.copy(
                     authenticationCode = ""
                 )
             }
+        )
+        authenticationState = authenticationState.copy(
+            isCheckingAuthCode = false
+        )
+    }
+
+    private fun register() = viewModelScope.launch(Dispatchers.IO) {
+        repo.registerUser(
+            request = UserRegistrationRequest(
+                name = registrationState.name,
+                phone = authenticationState.fullPhoneNumber,
+                userName = registrationState.username
+            )
+        ).handle(
+            onError = {
+                _uiMessages.emit(it)
+            }
+        )
+        registrationState = registrationState.copy(
+            isRegistering = false
         )
     }
 }

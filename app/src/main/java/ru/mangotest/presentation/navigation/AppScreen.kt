@@ -6,4 +6,6 @@ sealed class AppScreen(
     object Authentication: AppScreen("authentication") {
         const val CodeSelectionBottomSheet = "authentication/cod_selection"
     }
+
+    object Registration: AppScreen("registration")
 }

@@ -27,6 +27,12 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
     override suspend fun registerUser(request: UserRegistrationRequest) = handler {
         authApi.registerUser(request)
+    }.also { resource ->
+        resource.handle(
+            onSuccess = {
+                authStateStorage.updateAuthState(it.toAuthState())
+            }
+        )
     }
 
     override suspend fun requestAuthCode(phone: UserPhone) = handler {
@@ -38,7 +44,9 @@ class AuthenticationRepositoryImpl @Inject constructor(
     }.also { resource ->
         resource.handle(
             onSuccess = {
-                authStateStorage.updateAuthState(it.toAuthState())
+                if (it.doesUserExist) {
+                    authStateStorage.updateAuthState(it.toAuthState())
+                }
             }
         )
     }

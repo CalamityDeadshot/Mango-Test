@@ -19,6 +19,7 @@ import ru.mangotest.presentation.navigation.AppScreen
 import ru.mangotest.presentation.navigation.LocalNavController
 import ru.mangotest.presentation.screen.auth.Authentication
 import ru.mangotest.presentation.screen.auth.CountrySelectionBottomSheet
+import ru.mangotest.presentation.screen.auth.Registration
 import ru.mangotest.presentation.viewmodel.AuthViewModel
 
 @Composable
@@ -53,6 +54,12 @@ fun AuthenticationNavigation(
                         route = AppScreen.Authentication.route
                     ) {
                         Authentication(authViewModel)
+                    }
+
+                    composable(
+                        route = AppScreen.Registration.route
+                    ) {
+                        Registration(authViewModel)
                     }
 
                     bottomSheet(

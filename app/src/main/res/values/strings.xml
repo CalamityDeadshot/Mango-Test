@@ -12,6 +12,13 @@
     <string name="please_sign_in">Please sign in</string>
     <string name="reqest_auth_code">Send code</string>
     <string name="code_sent">We sent a code to your phone number. Please enter it below:</string>
+    <string name="tell_us_more">Tell us more about yourself</string>
+    <string name="name">Your name</string>
+    <string name="register">Sign up</string>
+    <string name="user_name">Username</string>
+    <string name="username_invalid">Username must only contain latin latters, numbers, hyphens (-) and underscores (_)</string>
+    <string name="username_empty">Username must not be empty</string>
+    <string name="name_empty">Please enter your name</string>
 
     <!--  Countries. Credit: https://github.com/jump-sdk/jetpack_compose_country_code_picker_emoji -->
     <string name="andora">Andorra</string>
