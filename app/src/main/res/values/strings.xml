@@ -20,7 +20,9 @@
     <string name="username_empty">Username must not be empty</string>
     <string name="name_empty">Please enter your name</string>
     <string name="messages">Messages</string>
-    <string name="nothing_to_see">Nothing to see here. Is\'s a sample</string>
+    <string name="nothing_to_see">Nothing to see here. It\'s a sample</string>
+    <string name="time_parsing_error">Time parsing error</string>
+    <string name="message">Message</string>
 
     <!--  Countries. Credit: https://github.com/jump-sdk/jetpack_compose_country_code_picker_emoji -->
     <string name="andora">Andorra</string>

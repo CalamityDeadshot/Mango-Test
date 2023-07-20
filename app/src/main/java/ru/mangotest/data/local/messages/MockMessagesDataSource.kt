@@ -38,7 +38,7 @@ class MockMessagesDataSource @Inject constructor(
             id = 69,
             last = null,
             online = true,
-            created = "2023-07-20T18:16:44+0000",
+            created = "2023-07-20T18:16:44+00:00",
             phone = "+79999999999",
             completedTask = 0,
             avatars = null
@@ -55,7 +55,7 @@ class MockMessagesDataSource @Inject constructor(
             id = 420,
             last = null,
             online = true,
-            created = "2023-07-20T18:16:44+0000",
+            created = "2023-07-20T18:16:44+00:00",
             phone = "+79999999998",
             completedTask = 0,
             avatars = null
@@ -77,13 +77,13 @@ class MockMessagesDataSource @Inject constructor(
         chats[0].id to mutableListOf(
             Message(
                 content = "Привет, MANGO FZCO! Попробуйте свайпнуть вверх в любом чате при версии Android 11 и выше.",
-                sentAt = "2023-07-20T18:16:44+0000",
+                sentAt = "2023-07-20T18:16:44+00:00",
                 isRead = true,
                 authorId = 69
             ),
             Message(
                 content = "Кринжанул",
-                sentAt = "2023-07-20T18:17:44+0000",
+                sentAt = "2023-07-20T18:17:44+00:00",
                 isRead = false,
                 authorId = currentUserId
             )
@@ -94,7 +94,7 @@ class MockMessagesDataSource @Inject constructor(
         messages[chats[1].id] = (0..20).map {
             Message(
                 content = "Lorem ipsum $it",
-                sentAt = "2023-${(it + 1).toString().padStart(2, '0')}-20T18:17:44+0000",
+                sentAt = "2023-01-${(it + 1).toString().padStart(2, '0')}T18:17:44+00:00",
                 isRead = true,
                 authorId = if (it % 2 == 0) currentUserId else 420
             )
@@ -111,7 +111,7 @@ class MockMessagesDataSource @Inject constructor(
         }
 
     override suspend fun getLatestMessages(chatId: String, limit: Int): List<Message> =
-        messages[chatId]!!.takeLast(limit)
+        messages[chatId]!!.takeLast(limit).sortedByDescending { it.sentAt }
 
     override suspend fun sendMessage(chatId: String, message: String) {
         messages[chatId]?.add(

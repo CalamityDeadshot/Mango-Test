@@ -271,4 +271,6 @@
     <string name="name_empty">Пожалуйста, введите своё имя</string>
     <string name="messages">Сообщения</string>
     <string name="nothing_to_see">Тут ничего нет. Это пример</string>
+    <string name="time_parsing_error">Ошибка обработки времени</string>
+    <string name="message">Сообщение</string>
 </resources>

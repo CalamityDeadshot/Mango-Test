@@ -47,7 +47,9 @@ class MainActivity : ComponentActivity() {
                     // since they do not interact at all
                     when (authState?.isAuthorized) {
                         true -> {
-                            AppNavigation()
+                            SharedElementsRoot {
+                                AppNavigation()
+                            }
                         }
                         false -> {
                             SharedElementsRoot {

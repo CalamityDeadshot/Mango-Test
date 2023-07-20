@@ -7,6 +7,10 @@ import ru.mangotest.data.local.messages.model.Message
 
 interface MessagesRepository {
 
+    val currentUserId: Int
+
+    suspend fun getChat(chatId: String): Chat
+
     fun getChats(): Flow<List<Chat>>
 
     fun getLatestMessages(

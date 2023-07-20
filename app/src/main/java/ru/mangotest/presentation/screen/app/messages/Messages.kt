@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mxalbert.sharedelements.SharedElement
 import kotlinx.coroutines.launch
 import ru.mangotest.R
 import ru.mangotest.data.local.messages.model.Chat
@@ -97,7 +99,8 @@ private fun MessagesContent(
         },
         snackbarHost = {
             SnackbarHost(snackbarHost)
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -175,32 +178,46 @@ private fun ChatItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(16.dp),
-                    shape = CircleShape
-                )
-                .size(64.dp),
-            contentAlignment = Alignment.Center
+        SharedElement(
+            key = "${chat.id}/avatar",
+            screenKey = AppScreen.Messages.route
         ) {
-            Text(
-                text = chat.companion.name.first().toString(),
-                style = MaterialTheme.typography.displaySmall,
-                lineHeight = 0.sp
-            )
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceColorAtElevation(16.dp),
+                        shape = CircleShape
+                    )
+                    .size(64.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = chat.companion.name.first().toString(),
+                    style = MaterialTheme.typography.displaySmall,
+                    lineHeight = 0.sp
+                )
+            }
         }
 
         Column {
             Row {
-                Text(
-                    text = chat.companion.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                    maxLines = 1
-                )
+
+                Box(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    SharedElement(
+                        key = "${chat.id}/name",
+                        screenKey = AppScreen.Messages.route
+                    ) {
+                        Text(
+                            text = chat.companion.name,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                    }
+                }
 
                 Text(
                     text = "date",

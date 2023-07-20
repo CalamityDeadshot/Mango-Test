@@ -3,9 +3,12 @@ package ru.mangotest.data.repository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
 import ru.mangotest.core.ResponseHandler
 import ru.mangotest.data.local.messages.model.Chat
+import ru.mangotest.domain.local.AuthStateStorage
 import ru.mangotest.domain.local.MessagesDataSource
 import ru.mangotest.domain.repository.MessagesRepository
 import javax.inject.Inject
@@ -14,8 +17,16 @@ import javax.inject.Singleton
 @Singleton
 class MessagesRepositoryImpl @Inject constructor(
     private val dataSource: MessagesDataSource,
+    private val authStateStorage: AuthStateStorage,
     private val handler: ResponseHandler
 ) : MessagesRepository {
+    override val currentUserId: Int = runBlocking {
+        authStateStorage.authState.first()!!.userId!!
+    }
+
+    override suspend fun getChat(chatId: String): Chat =
+        dataSource.getChats().find { it.id == chatId }!!
+
     override fun getChats(): Flow<List<Chat>> = flow {
         emit(dataSource.getChats())
     }
