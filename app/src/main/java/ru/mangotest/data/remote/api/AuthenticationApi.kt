@@ -3,6 +3,7 @@ package ru.mangotest.data.remote.api
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import ru.mangotest.data.remote.api.model.AuthResultDto
 import ru.mangotest.data.remote.api.model.RefreshTokenDto
@@ -33,6 +34,12 @@ interface AuthenticationApi {
     @POST("users/refresh-token/")
     suspend fun refreshAccessToken(
         @Body refreshToken: RefreshTokenRequest
+    ): RefreshTokenDto
+
+    @POST("users/refresh-token/")
+    suspend fun refreshAccessToken(
+        @Body refreshToken: RefreshTokenRequest,
+        @Header("Authorization") bearer: String
     ): RefreshTokenDto
 
     @GET("users/check-jwt/")

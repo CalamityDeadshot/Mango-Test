@@ -15,6 +15,7 @@ import retrofit2.create
 import ru.mangotest.BuildConfig
 import ru.mangotest.core.ResponseHandler
 import ru.mangotest.data.remote.AuthInterceptor
+import ru.mangotest.data.remote.TokenRefreshmentService
 import ru.mangotest.data.remote.api.AuthenticationApi
 import ru.mangotest.data.remote.api.UserApi
 import javax.inject.Singleton
@@ -36,9 +37,28 @@ object ApiModule {
         authInterceptor: AuthInterceptor,
         loggingInterceptor: HttpLoggingInterceptor
     ) = OkHttpClient().newBuilder()
-        .addInterceptor(authInterceptor)
         .addInterceptor(loggingInterceptor)
+        .addInterceptor(authInterceptor)
         .build()
+
+    @Provides
+    @Singleton
+    fun provideTokenService(
+        loggingInterceptor: HttpLoggingInterceptor,
+        responseHandler: ResponseHandler,
+        converter: Converter.Factory
+    ) = TokenRefreshmentService(
+        handler = responseHandler,
+        authenticationApi = Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(
+                OkHttpClient().newBuilder()
+                    .addInterceptor(loggingInterceptor)
+                    .build()
+            )
+            .addConverterFactory(converter)
+            .build().create()
+    )
 
     @Provides
     @Singleton

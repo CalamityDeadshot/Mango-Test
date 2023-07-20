@@ -1,6 +1,8 @@
 package ru.mangotest.data.local
 
+import android.util.Base64
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import ru.mangotest.data.remote.api.model.AuthResultDto
 import ru.mangotest.data.remote.api.model.RefreshTokenDto
 import ru.mangotest.data.remote.api.model.UserRegistrationDto
@@ -9,30 +11,39 @@ import ru.mangotest.data.remote.api.model.UserRegistrationDto
 data class AuthState(
     val accessToken: String?,
     val refreshToken: String?,
-    val userId: Int?,
     val isAuthorized: Boolean = false
 ) {
     companion object {
         val Empty = AuthState(
             accessToken = null,
             refreshToken = null,
-            userId = null,
             isAuthorized = false
         )
     }
+
+    val accessTokenPayload: AccessTokenPayload? = accessToken?.let {
+        Json.Default.decodeFromString(
+            Base64.decode(
+                accessToken.substringAfter('.').substringBefore('.'),
+                Base64.DEFAULT
+            ).decodeToString()
+        )
+    }
+
+    val userId: Int? = accessTokenPayload?.sub
 }
 
 fun AuthResultDto.toAuthState() =
     AuthState(
-        accessToken, refreshToken, userId, true
+        accessToken, refreshToken, true
     )
 
 fun RefreshTokenDto.toAuthState() =
     AuthState(
-        accessToken, refreshToken, userId, true
+        accessToken, refreshToken, true
     )
 
 fun UserRegistrationDto.toAuthState() =
     AuthState(
-        accessToken, refreshToken, userId
+        accessToken, refreshToken, isAuthorized = true
     )

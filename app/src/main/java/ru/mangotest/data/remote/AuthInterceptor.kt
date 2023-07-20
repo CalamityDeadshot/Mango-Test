@@ -1,19 +1,21 @@
 package ru.mangotest.data.remote
 
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import ru.mangotest.domain.local.AuthStateStorage
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AuthInterceptor @Inject constructor(
-    private val authStateStorage: AuthStateStorage
+    private val authStateStorage: AuthStateStorage,
+    private val tokenService: TokenRefreshmentService
 ): Interceptor {
 
     private val authenticationPaths = setOf(
-        "/api/v1/users/register",
-        "/api/v1/users/send-auth-code",
-        "/api/v1/users/check-auth-code"
+        "/api/v1/users/register/",
+        "/api/v1/users/send-auth-code/",
+        "/api/v1/users/check-auth-code/"
     )
 
     override fun intercept(chain: Interceptor.Chain) =
@@ -29,6 +31,12 @@ class AuthInterceptor @Inject constructor(
         }
 
     private fun getAccessToken() = runBlocking {
-        authStateStorage.authState.first()?.accessToken
+        tokenService.withFreshTokens(authStateStorage) { accessToken, exception ->
+            exception?.let {
+                throw it
+            }
+
+            return@runBlocking accessToken
+        }
     }
 }

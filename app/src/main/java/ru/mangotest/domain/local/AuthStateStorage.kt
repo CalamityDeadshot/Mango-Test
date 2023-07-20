@@ -5,8 +5,6 @@ import ru.mangotest.data.local.AuthState
 
 interface AuthStateStorage {
 
-    val hasTokenExpired: Boolean
-
     val authState: Flow<AuthState?>
 
     suspend fun updateAuthState(

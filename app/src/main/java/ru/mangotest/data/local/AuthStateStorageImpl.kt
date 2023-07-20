@@ -35,8 +35,6 @@ class AuthStateStorageImpl @Inject constructor(
             Json.Default.decodeFromString(it)
         } ?: AuthState.Empty
 
-    override val hasTokenExpired: Boolean
-        get() = false
 
     override val authState: Flow<AuthState?>
         get() = dataStore.data.map { it.authState }
