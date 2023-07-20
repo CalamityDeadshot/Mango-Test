@@ -1,4 +1,4 @@
-package ru.mangotest.data.local
+package ru.mangotest.data.local.auth_state
 
 import android.content.Context
 import androidx.datastore.core.DataStore

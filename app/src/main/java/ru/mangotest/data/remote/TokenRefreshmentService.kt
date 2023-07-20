@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import ru.mangotest.core.Resource
 import ru.mangotest.core.ResponseHandler
-import ru.mangotest.data.local.toAuthState
+import ru.mangotest.data.local.auth_state.toAuthState
 import ru.mangotest.data.remote.api.AuthenticationApi
 import ru.mangotest.data.remote.api.model.RefreshTokenDto
 import ru.mangotest.data.remote.api.model.RefreshTokenRequest

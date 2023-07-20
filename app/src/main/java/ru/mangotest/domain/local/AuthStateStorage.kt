@@ -1,7 +1,7 @@
 package ru.mangotest.domain.local
 
 import kotlinx.coroutines.flow.Flow
-import ru.mangotest.data.local.AuthState
+import ru.mangotest.data.local.auth_state.AuthState
 
 interface AuthStateStorage {
 

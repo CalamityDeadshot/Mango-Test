@@ -1,4 +1,4 @@
-package ru.mangotest.data.local
+package ru.mangotest.data.local.auth_state
 
 
 import kotlinx.serialization.Serializable
