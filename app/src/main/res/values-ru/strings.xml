@@ -269,4 +269,6 @@
     <string name="username_invalid">Имя пользователя должно состоять только из латинских букв, цифр, тире (-) и нижних подчёркиваний (_)</string>
     <string name="username_empty">Имя пользователя пусто</string>
     <string name="name_empty">Пожалуйста, введите своё имя</string>
+    <string name="messages">Сообщения</string>
+    <string name="nothing_to_see">Тут ничего нет. Это пример</string>
 </resources>

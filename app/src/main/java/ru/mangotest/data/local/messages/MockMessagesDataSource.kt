@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import ru.mangotest.data.local.messages.model.Chat
 import ru.mangotest.data.local.messages.model.ChatEntity
 import ru.mangotest.data.local.messages.model.Message
+import ru.mangotest.data.remote.api.model.user.ProfileData
 import ru.mangotest.domain.local.AuthStateStorage
 import ru.mangotest.domain.local.MessagesDataSource
 import java.text.DateFormat
@@ -24,6 +25,43 @@ class MockMessagesDataSource @Inject constructor(
         authStateStorage.authState.first()!!.userId!!
     }
 
+    private val users = listOf(
+        ProfileData(
+            name = "Александр Крупин",
+            username = "AlexK",
+            birthday = null,
+            city = null,
+            vk = null,
+            instagram = null,
+            status = null,
+            avatar = null,
+            id = 69,
+            last = null,
+            online = true,
+            created = "2023-07-20T18:16:44+0000",
+            phone = "+79999999999",
+            completedTask = 0,
+            avatars = null
+        ),
+        ProfileData(
+            name = "Семён Летягин",
+            username = "hehe",
+            birthday = null,
+            city = null,
+            vk = null,
+            instagram = null,
+            status = null,
+            avatar = null,
+            id = 420,
+            last = null,
+            online = true,
+            created = "2023-07-20T18:16:44+0000",
+            phone = "+79999999998",
+            completedTask = 0,
+            avatars = null
+        )
+    ).associateBy { it.id }
+
     private val chats = listOf(
         ChatEntity(
             id = UUID.randomUUID().toString(),
@@ -38,7 +76,7 @@ class MockMessagesDataSource @Inject constructor(
     private val messages = mutableMapOf(
         chats[0].id to mutableListOf(
             Message(
-                content = "Привет, MANGO FZCO! Попробуйте свайпнуть вверх в чате",
+                content = "Привет, MANGO FZCO! Попробуйте свайпнуть вверх в любом чате при версии Android 11 и выше.",
                 sentAt = "2023-07-20T18:16:44+0000",
                 isRead = true,
                 authorId = 69
@@ -46,7 +84,7 @@ class MockMessagesDataSource @Inject constructor(
             Message(
                 content = "Кринжанул",
                 sentAt = "2023-07-20T18:17:44+0000",
-                isRead = true,
+                isRead = false,
                 authorId = currentUserId
             )
         )
@@ -67,7 +105,7 @@ class MockMessagesDataSource @Inject constructor(
         chats.map {
             Chat(
                 id = it.id,
-                companionId = it.companionId,
+                companion = users[it.companionId]!!,
                 lastMessage = messages[it.id]!!.maxBy { it.sentAt }
             )
         }

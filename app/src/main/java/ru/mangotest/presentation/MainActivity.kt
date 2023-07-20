@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
@@ -15,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import com.mxalbert.sharedelements.SharedElementsRoot
 import dagger.hilt.android.AndroidEntryPoint
-import ru.mangotest.presentation.screen.app.MangoApplication
+import ru.mangotest.presentation.navigation.AppNavigation
 import ru.mangotest.presentation.screen.auth.navigation.AuthenticationNavigation
 import ru.mangotest.presentation.theme.MangoTestTheme
 import ru.mangotest.presentation.viewmodel.AuthViewModel
@@ -36,7 +37,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxSize()
                         .imePadding()
-                        .navigationBarsPadding(),
+                        .navigationBarsPadding()
+                        .systemBarsPadding(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val authState by authViewModel.authState.collectAsState(initial = null)
@@ -45,7 +47,7 @@ class MainActivity : ComponentActivity() {
                     // since they do not interact at all
                     when (authState?.isAuthorized) {
                         true -> {
-                            MangoApplication()
+                            AppNavigation()
                         }
                         false -> {
                             SharedElementsRoot {

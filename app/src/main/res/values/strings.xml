@@ -19,6 +19,8 @@
     <string name="username_invalid">Username must only contain latin latters, numbers, hyphens (-) and underscores (_)</string>
     <string name="username_empty">Username must not be empty</string>
     <string name="name_empty">Please enter your name</string>
+    <string name="messages">Messages</string>
+    <string name="nothing_to_see">Nothing to see here. Is\'s a sample</string>
 
     <!--  Countries. Credit: https://github.com/jump-sdk/jetpack_compose_country_code_picker_emoji -->
     <string name="andora">Andorra</string>

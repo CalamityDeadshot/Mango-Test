@@ -1,5 +1,6 @@
 package ru.mangotest.presentation.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,10 +10,15 @@ import ru.mangotest.domain.repository.MessagesRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class MessagesViewModel @Inject constructor(
+class ChatViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     repo: MessagesRepository
 ): ViewModel() {
+    private val chatId: String = savedState["id"]!!
 
-    val chats = repo.getChats()
+    val messages = repo.getLatestMessages(
+        chatId = chatId,
+        limit = 10
+    )
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 }
