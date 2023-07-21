@@ -12,15 +12,19 @@ import ru.mangotest.data.remote.api.model.UserAuthCode
 import ru.mangotest.data.remote.api.model.UserPhone
 import ru.mangotest.data.remote.api.model.UserRegistrationRequest
 import ru.mangotest.domain.local.AuthStateStorage
+import ru.mangotest.domain.local.UserDataStorage
 import ru.mangotest.domain.repository.AuthenticationRepository
+import ru.mangotest.domain.use_case.UpdateUserUseCase
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AuthenticationRepositoryImpl @Inject constructor(
     private val authStateStorage: AuthStateStorage,
+    private val userDataStorage: UserDataStorage,
     private val handler: ResponseHandler,
-    private val authApi: AuthenticationApi
+    private val authApi: AuthenticationApi,
+    private val updateUserData: UpdateUserUseCase
 ): AuthenticationRepository {
 
     override val authState: Flow<AuthState?> = authStateStorage.authState
@@ -31,6 +35,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
         resource.handle(
             onSuccess = {
                 authStateStorage.updateAuthState(it.toAuthState())
+                updateUserData()
             }
         )
     }
@@ -46,6 +51,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
             onSuccess = {
                 if (it.doesUserExist) {
                     authStateStorage.updateAuthState(it.toAuthState())
+                    updateUserData()
                 }
             }
         )
@@ -65,7 +71,9 @@ class AuthenticationRepositoryImpl @Inject constructor(
         authApi.checkAuthentication()
     }
 
-    override suspend fun endSession() =
+    override suspend fun endSession() {
         authStateStorage.deleteAuthState()
+        userDataStorage.deleteUserData()
+    }
 
 }
