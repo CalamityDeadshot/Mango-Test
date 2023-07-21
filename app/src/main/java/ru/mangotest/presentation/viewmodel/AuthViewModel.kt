@@ -134,6 +134,9 @@ class AuthViewModel @Inject constructor(
                 },
                 onError = {
                     _uiMessages.emit(it)
+                    authenticationState = authenticationState.copy(
+                        isRequestingCode = false,
+                    )
                 }
             )
         }
