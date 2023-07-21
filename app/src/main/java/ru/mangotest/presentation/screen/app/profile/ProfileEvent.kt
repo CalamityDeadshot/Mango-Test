@@ -1,6 +1,7 @@
 package ru.mangotest.presentation.screen.app.profile
 
 import android.net.Uri
+import java.time.LocalDate
 
 sealed interface ProfileEvent {
     object OnUpdate: ProfileEvent
@@ -16,4 +17,5 @@ sealed interface ProfileEvent {
         val uri: Uri?,
         val base64Factory: () -> String?
     ): ProfileEvent
+    data class OnBirthdayPicked(val date: LocalDate?): ProfileEvent
 }

@@ -291,4 +291,6 @@
     <string name="profile_vk">ВК</string>
     <string name="profile_inst">Роскомграмм</string>
     <string name="upload_photo">Загруить изображение</string>
+    <string name="retry">Попробовать снова</string>
+    <string name="user_birthday">Дата рождения</string>
 </resources>

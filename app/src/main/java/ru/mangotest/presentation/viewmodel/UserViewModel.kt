@@ -9,7 +9,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -56,7 +55,6 @@ class UserViewModel @Inject constructor(
                 if (it == null) {
                     updateUserData()
                 }
-                cancel()
             }
         }
     }
@@ -107,6 +105,8 @@ class UserViewModel @Inject constructor(
                 editModeState = editModeState.copy(status = event.status.ifEmpty { null })
             is ProfileEvent.OnVkChanged ->
                 editModeState = editModeState.copy(vk = event.vk.ifEmpty { null })
+            is ProfileEvent.OnBirthdayPicked ->
+                editModeState = editModeState.copy(birthday = event.date)
         }
     }
 
@@ -121,6 +121,11 @@ class UserViewModel @Inject constructor(
         repo.updateUserData().handle(
             onError = {
                 _uiMessages.emit(it)
+                _state.update { state ->
+                    state.copy(
+                        firstFetchError = it
+                    )
+                }
             }
         )
 
@@ -145,7 +150,7 @@ class UserViewModel @Inject constructor(
                 data = EditUserInfoRequest(
                     name = user.name,
                     username = user.username,
-                    birthday = editModeState.birthday,
+                    birthday = editModeState.birthday?.toString(),
                     city = editModeState.city,
                     instagram = editModeState.instagram,
                     vk = editModeState.vk,
@@ -160,17 +165,23 @@ class UserViewModel @Inject constructor(
             ).handle(
                 onError = {
                     _uiMessages.emit(it)
+                    _state.update {
+                        it.copy(
+                            isUpdating = false
+                        )
+                    }
+                },
+                onSuccess = {
+                    pickedImageBase64 = null
+                    editModeState = EditModeState.fromUserData(state.value.user)
+                    _state.update {
+                        it.copy(
+                            isEditing = false,
+                            pickedPhotoUri = null,
+                            isUpdating = false
+                        )
+                    }
                 }
-            )
-        }
-
-        pickedImageBase64 = null
-        editModeState = EditModeState.fromUserData(state.value.user)
-        _state.update {
-            it.copy(
-                isEditing = false,
-                pickedPhotoUri = null,
-                isUpdating = false
             )
         }
     }

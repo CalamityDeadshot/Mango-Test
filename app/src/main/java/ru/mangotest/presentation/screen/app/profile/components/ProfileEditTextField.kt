@@ -9,6 +9,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -21,6 +23,8 @@ fun ProfileEditTextField(
     value: String,
     icon: ImageVector? = null,
     label: String,
+    readOnly: Boolean = false,
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
     onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
@@ -46,7 +50,9 @@ fun ProfileEditTextField(
                     contentDescription = null
                 )
             }
-        }
+        },
+        readOnly = readOnly,
+        colors = colors
     )
 }
 @Composable
@@ -56,6 +62,7 @@ fun ProfileEditTextField(
     value: String,
     painter: Painter? = null,
     label: String,
+    readOnly: Boolean = false,
     onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
@@ -81,6 +88,7 @@ fun ProfileEditTextField(
                     contentDescription = null
                 )
             }
-        }
+        },
+        readOnly = readOnly
     )
 }
