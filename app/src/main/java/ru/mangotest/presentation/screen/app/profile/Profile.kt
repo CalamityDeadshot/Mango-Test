@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
+@file:OptIn(
+    ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
     ExperimentalAnimationApi::class
 )
 
@@ -6,7 +7,6 @@ package ru.mangotest.presentation.screen.app.profile
 
 import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -34,8 +34,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.PhoneEnabled
-import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -65,10 +63,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -80,6 +80,7 @@ import ru.mangotest.presentation.components.backdrop.BackdropScaffold
 import ru.mangotest.presentation.components.backdrop.BackdropValue
 import ru.mangotest.presentation.components.backdrop.rememberBackdropScaffoldState
 import ru.mangotest.presentation.screen.app.profile.components.ProfileEditTextField
+import ru.mangotest.presentation.screen.app.profile.components.UploadImageButton
 import ru.mangotest.presentation.screen.app.profile.components.rememberBirthdayPicker
 import ru.mangotest.presentation.util.LocalActivity
 import ru.mangotest.presentation.util.collectIntoSnackbar
@@ -154,32 +155,32 @@ private fun ProfileContent(
                 },
                 actions = {
 
-                        AnimatedContent(
-                            targetState = state.isEditing
-                        ) {
-                            if (it) {
-                                IconButton(
-                                    onClick = {
-                                        onEvent(ProfileEvent.OnConfirmEdit)
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = "Save"
-                                    )
+                    AnimatedContent(
+                        targetState = state.isEditing
+                    ) {
+                        if (it) {
+                            IconButton(
+                                onClick = {
+                                    onEvent(ProfileEvent.OnConfirmEdit)
                                 }
-                            } else {
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Save"
+                                )
+                            }
+                        } else {
 
-                                IconButton(
-                                    onClick = { onEvent(ProfileEvent.OnEdit) }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Edit,
-                                        contentDescription = "Edit"
-                                    )
-                                }
+                            IconButton(
+                                onClick = { onEvent(ProfileEvent.OnEdit) }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = "Edit"
+                                )
                             }
                         }
+                    }
 
                     AnimatedVisibility(
                         visible = state.isEditing
@@ -204,73 +205,77 @@ private fun ProfileContent(
             SnackbarHost(snackbarHost)
         }
     ) {
+
+        val offsetFactory: Density.() -> IntOffset = {
+            IntOffset(
+                x = 0,
+                y = (
+                        backdropScaffoldState.offset.value.toInt() -
+                                Integer.min(
+                                    screenWidth,
+                                    screenHeightDp
+                                        .toPx()
+                                        .toInt()
+                                )
+                                + 16.dp
+                            .toPx()
+                            .toInt()
+                        ) / 2
+            )
+        }
+
         BackdropScaffold(
             modifier = Modifier.padding(it),
             scaffoldState = backdropScaffoldState,
             backLayerContent = {
                 Box(
                     modifier = Modifier
-                        .offset {
-                            IntOffset(
-                                0,
-                                (
-                                        backdropScaffoldState.offset.value.toInt() -
-                                                Integer.min(
-                                                    screenWidth,
-                                                    screenHeightDp
-                                                        .toPx()
-                                                        .toInt()
-                                                )
-                                                + 16.dp
-                                            .toPx()
-                                            .toInt()
-                                        ) / 2
-                            )
-                        }
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
                     user?.let { user ->
                         SubcomposeAsyncImage(
-                            modifier = Modifier.fillMaxWidth(),
-                            model = state.pickedPhotoUri ?: ImageRequest.Builder(LocalContext.current)
-                                .data("${BuildConfig.HOST}${user.avatars?.bigAvatar}")
-                                .crossfade(true)
-                                .build(),
+                            modifier = Modifier
+                                .offset(offsetFactory),
+                            model = state.pickedPhotoUri
+                                ?: ImageRequest.Builder(LocalContext.current)
+                                    .data("${BuildConfig.HOST}${user.avatars?.bigAvatar}")
+                                    .crossfade(true)
+                                    .build(),
                             contentDescription = "Avatar",
                             contentScale = ContentScale.FillWidth,
                             loading = {
                                 Box(
                                     modifier = Modifier
-                                        .fillMaxSize(),
+                                        .fillMaxWidth()
+                                        .height(screenHeightDp / 3),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     CircularProgressIndicator()
                                 }
                             },
                             error = {
-
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(screenHeightDp / 3)
+                                ) {
+                                    UploadImageButton(
+                                        photoPickerLauncher = photoPickerLauncher,
+                                        isVisible = state.isEditing
+                                    )
+                                }
+                            },
+                            success = {
+                                SubcomposeAsyncImageContent(
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                UploadImageButton(
+                                    photoPickerLauncher = photoPickerLauncher,
+                                    isVisible = state.isEditing
+                                )
                             }
                         )
-                    }
-
-                    AnimatedVisibility(
-                        modifier = Modifier.align(Alignment.Center),
-                        visible = state.isEditing
-                    ) {
-                        Button(
-                            onClick = {
-                                photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(.6f),
-                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                        ) {
-                            Icon(imageVector = Icons.Default.Upload, contentDescription = null)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = stringResource(R.string.upload_photo))
-                        }
                     }
                 }
             },
@@ -377,8 +382,7 @@ private fun UserInfo(
                     label = stringResource(R.string.profile_ctiy),
                     onValueChange = { onEvent(ProfileEvent.OnCityChanged(it)) }
                 )
-            }
-            else if (user.city != null) {
+            } else if (user.city != null) {
                 IconizedRow(
                     imageVector = Icons.Default.LocationCity,
                     contentDescription = null,
