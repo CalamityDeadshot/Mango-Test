@@ -19,6 +19,7 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import ru.mangotest.presentation.screen.app.messages.ChatScreen
 import ru.mangotest.presentation.screen.app.messages.Messages
+import ru.mangotest.presentation.screen.app.profile.Profile
 
 @Composable
 fun AppNavigation() {
@@ -80,7 +81,7 @@ fun NavGraphBuilder.profile() {
         composable(
             route = AppScreen.Profile.route
         ) {
-
+            Profile()
         }
     }
 }

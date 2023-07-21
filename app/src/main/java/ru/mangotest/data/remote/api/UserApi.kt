@@ -4,8 +4,8 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import ru.mangotest.data.remote.api.model.user.UserDto
-import ru.mangotest.data.remote.api.model.user.UserInfoRequest
-import ru.mangotest.data.remote.api.model.user.UserInfoResponse
+import ru.mangotest.data.remote.api.model.user.EditUserInfoRequest
+import ru.mangotest.data.remote.api.model.user.EditUserInfoResponse
 
 interface UserApi {
 
@@ -14,6 +14,6 @@ interface UserApi {
 
     @PUT("users/me/")
     suspend fun changeUserInfo(
-        @Body userInfo: UserInfoRequest
-    ): UserInfoResponse
+        @Body userInfo: EditUserInfoRequest
+    ): EditUserInfoResponse
 }

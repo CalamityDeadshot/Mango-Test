@@ -23,6 +23,24 @@
     <string name="nothing_to_see">Nothing to see here. It\'s a sample</string>
     <string name="time_parsing_error">Time parsing error</string>
     <string name="message">Message</string>
+    <string name="user_about">Status</string>
+    <string name="aries">Aries</string>
+    <string name="taurus">Taurus</string>
+    <string name="gemini">Gemini</string>
+    <string name="cancer">Cancer</string>
+    <string name="leo">Leo</string>
+    <string name="virgo">Virgo</string>
+    <string name="libra">Libra</string>
+    <string name="scorpio">Scorpio</string>
+    <string name="sagittarius">Sagittarius</string>
+    <string name="capricorn">Capricorn</string>
+    <string name="auqarius">Aquarius</string>
+    <string name="pisces">Pisces</string>
+    <string name="profile">Profile</string>
+    <string name="profile_ctiy">Your city</string>
+    <string name="profile_vk">VK</string>
+    <string name="profile_inst">Instagram</string>
+    <string name="upload_photo">Upload a new photo</string>
 
     <!--  Countries. Credit: https://github.com/jump-sdk/jetpack_compose_country_code_picker_emoji -->
     <string name="andora">Andorra</string>

@@ -1,0 +1,177 @@
+package ru.mangotest.presentation.viewmodel
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import ru.mangotest.core.UiText
+import ru.mangotest.data.remote.api.model.user.Avatar
+import ru.mangotest.data.remote.api.model.user.EditUserInfoRequest
+import ru.mangotest.domain.repository.UserRepository
+import ru.mangotest.presentation.screen.app.profile.ProfileEvent
+import ru.mangotest.presentation.viewmodel.state.auth.EditModeState
+import ru.mangotest.presentation.viewmodel.state.auth.UserScreenState
+import javax.inject.Inject
+
+@HiltViewModel
+class UserViewModel @Inject constructor(
+    private val repo: UserRepository
+): ViewModel() {
+
+    private val _state = MutableStateFlow(UserScreenState())
+
+    val state = _state.combine(repo.getUserData()) { state, user ->
+        editModeState = EditModeState.fromUserData(user)
+        state.copy(
+            user = user
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UserScreenState())
+
+    private val _uiMessages = MutableSharedFlow<UiText>()
+    val uiMessages = _uiMessages.asSharedFlow()
+
+    private var pickedImageBase64: Deferred<String?>? = null
+
+    var editModeState: EditModeState by mutableStateOf(EditModeState.fromUserData(state.value.user))
+        private set
+
+    init {
+        viewModelScope.launch(Dispatchers.Default) {
+            repo.getUserData().collect {
+                if (it == null) {
+                    updateUserData()
+                }
+                cancel()
+            }
+        }
+    }
+
+    fun onEvent(event: ProfileEvent) {
+        when (event) {
+            ProfileEvent.OnConfirmEdit -> {
+                editUserData()
+            }
+            ProfileEvent.OnEdit -> {
+                _state.update {
+                    it.copy(
+                        isEditing = true
+                    )
+                }
+            }
+            ProfileEvent.OnUpdate -> {
+                viewModelScope.launch {
+                    updateUserData()
+                }
+            }
+
+            ProfileEvent.OnCancelEdit -> {
+                _state.update {
+                    it.copy(
+                        isEditing = false,
+                        pickedPhotoUri = null
+                    )
+                }
+                pickedImageBase64 = null
+            }
+            is ProfileEvent.OnPhotoPicked -> {
+                _state.update {
+                    it.copy(
+                        pickedPhotoUri = event.uri
+                    )
+                }
+                pickedImageBase64 = viewModelScope.async(Dispatchers.Default) {
+                     event.base64Factory()
+                }
+            }
+
+            is ProfileEvent.OnCityChanged ->
+                editModeState = editModeState.copy(city = event.city.ifEmpty { null })
+            is ProfileEvent.OnInstagramChanged ->
+                editModeState = editModeState.copy(instagram = event.inst.ifEmpty { null })
+            is ProfileEvent.OnStatusChanged ->
+                editModeState = editModeState.copy(status = event.status.ifEmpty { null })
+            is ProfileEvent.OnVkChanged ->
+                editModeState = editModeState.copy(vk = event.vk.ifEmpty { null })
+        }
+    }
+
+    private suspend fun updateUserData() = withContext(Dispatchers.IO) {
+
+        _state.update {
+            it.copy(
+                isUpdating = true
+            )
+        }
+
+        repo.updateUserData().handle(
+            onError = {
+                _uiMessages.emit(it)
+            }
+        )
+
+        _state.update {
+            it.copy(
+                isUpdating = false
+            )
+        }
+    }
+
+    private fun editUserData() = viewModelScope.launch(Dispatchers.IO) {
+
+        _state.update {
+            it.copy(
+                isUpdating = true
+            )
+        }
+
+        state.value.user?.let { user ->
+            val avatar = pickedImageBase64?.await()
+            repo.editUserData(
+                data = EditUserInfoRequest(
+                    name = user.name,
+                    username = user.username,
+                    birthday = editModeState.birthday,
+                    city = editModeState.city,
+                    instagram = editModeState.instagram,
+                    vk = editModeState.vk,
+                    status = editModeState.status,
+                    avatar = avatar?.let {
+                        Avatar(
+                            filename = it.take(10),
+                            base64 = it
+                        )
+                    }
+                )
+            ).handle(
+                onError = {
+                    _uiMessages.emit(it)
+                }
+            )
+        }
+
+        pickedImageBase64 = null
+        editModeState = EditModeState.fromUserData(state.value.user)
+        _state.update {
+            it.copy(
+                isEditing = false,
+                pickedPhotoUri = null,
+                isUpdating = false
+            )
+        }
+    }
+}

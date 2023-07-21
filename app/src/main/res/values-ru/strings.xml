@@ -273,4 +273,22 @@
     <string name="nothing_to_see">Тут ничего нет. Это пример</string>
     <string name="time_parsing_error">Ошибка обработки времени</string>
     <string name="message">Сообщение</string>
+    <string name="user_about">О себе</string>
+    <string name="aries">Овен</string>
+    <string name="taurus">Телец</string>
+    <string name="gemini">Близнецы</string>
+    <string name="cancer">Рак</string>
+    <string name="leo">Лев</string>
+    <string name="virgo">Дева</string>
+    <string name="libra">Весы</string>
+    <string name="scorpio">Скорпион</string>
+    <string name="sagittarius">Стрелец</string>
+    <string name="capricorn">Козерог</string>
+    <string name="auqarius">Водолей</string>
+    <string name="pisces">Рыбы</string>
+    <string name="profile">Профиль</string>
+    <string name="profile_ctiy">Город проживания</string>
+    <string name="profile_vk">ВК</string>
+    <string name="profile_inst">Роскомграмм</string>
+    <string name="upload_photo">Загруить изображение</string>
 </resources>

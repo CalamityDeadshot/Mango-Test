@@ -16,7 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
@@ -46,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mxalbert.sharedelements.SharedElement
 import kotlinx.coroutines.launch
 import ru.mangotest.R
+import ru.mangotest.core.extentions.fromIso8601ToDateTime
 import ru.mangotest.data.local.messages.model.Chat
 import ru.mangotest.data.local.messages.model.Message
 import ru.mangotest.data.remote.api.model.user.ProfileData
@@ -68,6 +73,9 @@ fun Messages(
             navController.navigate(
                 "${AppScreen.Chat.navLink}/${it.id}"
             )
+        },
+        onProfileClicked = {
+            navController.navigate(AppScreen.Profile.route)
         }
     )
 }
@@ -75,7 +83,8 @@ fun Messages(
 @Composable
 private fun MessagesContent(
     chats: List<Chat>,
-    onChatClicked: (Chat) -> Unit
+    onChatClicked: (Chat) -> Unit,
+    onProfileClicked: () -> Unit
 ) {
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -94,7 +103,17 @@ private fun MessagesContent(
                 title = {
                     Text(stringResource(R.string.messages))
                 },
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                actions = {
+                    IconButton(
+                        onClick = onProfileClicked
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Account"
+                        )
+                    }
+                }
             )
         },
         snackbarHost = {
@@ -150,7 +169,7 @@ private fun MessagesContent(
                             id = 69,
                             last = null,
                             online = true,
-                            created = "2023-07-20T18:16:44+0000",
+                            created = "2023-07-20T18:16:44+00:00",
                             phone = "+79999999999",
                             completedTask = 0,
                             avatars = null
@@ -173,6 +192,8 @@ private fun ChatItem(
     modifier: Modifier = Modifier,
     chat: Chat
 ) {
+    val (_, time) = chat.lastMessage.sentAt.fromIso8601ToDateTime(LocalContext.current, false)
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -220,7 +241,7 @@ private fun ChatItem(
                 }
 
                 Text(
-                    text = "date",
+                    text = time,
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1
                 )

@@ -23,6 +23,7 @@ android {
         }
 
         buildConfigField("String", "BASE_URL", "\"https://plannerok.ru/api/v1/\"")
+        buildConfigField("String", "HOST", "\"https://plannerok.ru/\"")
     }
 
     buildTypes {
@@ -63,11 +64,16 @@ dependencies {
     implementation platform('androidx.compose:compose-bom:2022.10.00')
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+    implementation "androidx.compose.ui:ui-util:$compose_version"
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material'
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     implementation "androidx.navigation:navigation-compose:2.6.0"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
     implementation "com.google.accompanist:accompanist-navigation-material:0.29.1-alpha"
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.21.1-beta"
         // Shared elements
     implementation("com.mxalbert.sharedelements:shared-elements:0.1.0-SNAPSHOT")
 
@@ -96,6 +102,9 @@ dependencies {
 
     // Time
     implementation 'org.jetbrains.kotlinx:kotlinx-datetime:0.3.0'
+
+    // Reflection
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     // Test
     testImplementation 'junit:junit:4.13.2'
