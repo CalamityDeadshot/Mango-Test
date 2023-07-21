@@ -150,12 +150,13 @@ class AuthViewModel @Inject constructor(
             )
         ).handle(
             onSuccess = {
-                authenticationState = AuthenticationScreenState(
-                    selectedCountry = countryDataMap[application.countryCode] ?: russia
-                )
                 if (!it.doesUserExist) {
                     _uiEvents.emit(
                         UiEvent.Navigate(AppScreen.Registration.route)
+                    )
+                } else {
+                    authenticationState = AuthenticationScreenState(
+                        selectedCountry = countryDataMap[application.countryCode] ?: russia
                     )
                 }
             },
