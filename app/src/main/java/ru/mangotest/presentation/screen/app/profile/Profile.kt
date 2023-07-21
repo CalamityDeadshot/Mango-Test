@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationCity
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.PhoneEnabled
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.Button
@@ -360,8 +361,7 @@ private fun UserInfo(
 
         IconizedRow(
             imageVector = Icons.Default.PhoneEnabled,
-            contentDescription = stringResource(R.string.phone_number),
-            spacing = 0.dp
+            contentDescription = stringResource(R.string.phone_number)
         ) {
             Text(text = user.phone)
         }
@@ -498,6 +498,22 @@ private fun UserInfo(
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(text = user.status)
                 }
+            }
+        }
+
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            visible = !state.isEditing
+        ) {
+            TextButton(
+                onClick = { onEvent(ProfileEvent.OnSignOut) },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Icon(imageVector = Icons.Default.Logout, contentDescription = null)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = stringResource(R.string.log_out))
             }
         }
     }

@@ -43,6 +43,7 @@
     <string name="upload_photo">Upload a new photo</string>
     <string name="retry">Retry</string>
     <string name="user_birthday">Birthday</string>
+    <string name="log_out">Log out</string>
 
     <!--  Countries. Credit: https://github.com/jump-sdk/jetpack_compose_country_code_picker_emoji -->
     <string name="andora">Andorra</string>

@@ -1,13 +1,12 @@
 package ru.mangotest.presentation.viewmodel
 
-import android.content.Context
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -35,13 +34,13 @@ class AuthViewModel @Inject constructor(
     private val repo: AuthenticationRepository,
     private val validateUsername: UsernameValidationUseCase,
     private val validateName: NameValidationUseCase,
-    @ApplicationContext context: Context // ugh
-): ViewModel() {
+    private val application: Application // ugh. Would love to know how I could've avoided this
+): AndroidViewModel(application) {
     val authState = repo.authState
 
     var authenticationState by mutableStateOf(
         AuthenticationScreenState(
-            selectedCountry = countryDataMap[context.countryCode] ?: russia
+            selectedCountry = countryDataMap[application.countryCode] ?: russia
         )
     )
         private set
@@ -151,6 +150,9 @@ class AuthViewModel @Inject constructor(
             )
         ).handle(
             onSuccess = {
+                authenticationState = AuthenticationScreenState(
+                    selectedCountry = countryDataMap[application.countryCode] ?: russia
+                )
                 if (!it.doesUserExist) {
                     _uiEvents.emit(
                         UiEvent.Navigate(AppScreen.Registration.route)
@@ -179,6 +181,9 @@ class AuthViewModel @Inject constructor(
         ).handle(
             onError = {
                 _uiMessages.emit(it)
+            },
+            onSuccess = {
+                registrationState = RegistrationScreenState()
             }
         )
         registrationState = registrationState.copy(

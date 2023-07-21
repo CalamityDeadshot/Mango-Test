@@ -8,6 +8,7 @@ sealed interface ProfileEvent {
     object OnEdit: ProfileEvent
     object OnConfirmEdit: ProfileEvent
     object OnCancelEdit: ProfileEvent
+    object OnSignOut: ProfileEvent
 
     data class OnCityChanged(val city: String): ProfileEvent
     data class OnVkChanged(val vk: String): ProfileEvent

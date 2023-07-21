@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,7 @@ import ru.mangotest.core.UiText
 import ru.mangotest.data.remote.api.model.user.Avatar
 import ru.mangotest.data.remote.api.model.user.EditUserInfoRequest
 import ru.mangotest.domain.repository.UserRepository
+import ru.mangotest.domain.use_case.EndSessionUseCase
 import ru.mangotest.presentation.screen.app.profile.ProfileEvent
 import ru.mangotest.presentation.viewmodel.state.auth.EditModeState
 import ru.mangotest.presentation.viewmodel.state.auth.UserScreenState
@@ -29,7 +31,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
-    private val repo: UserRepository
+    private val repo: UserRepository,
+    private val endSession: EndSessionUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(UserScreenState())
@@ -49,8 +52,10 @@ class UserViewModel @Inject constructor(
     var editModeState: EditModeState by mutableStateOf(EditModeState.fromUserData(state.value.user))
         private set
 
+    private val ensuringUserNotNullJob: Job
+
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        ensuringUserNotNullJob = viewModelScope.launch(Dispatchers.Default) {
             repo.getUserData().collect {
                 if (it == null) {
                     updateUserData()
@@ -107,6 +112,11 @@ class UserViewModel @Inject constructor(
                 editModeState = editModeState.copy(vk = event.vk.ifEmpty { null })
             is ProfileEvent.OnBirthdayPicked ->
                 editModeState = editModeState.copy(birthday = event.date)
+
+            ProfileEvent.OnSignOut -> viewModelScope.launch {
+                ensuringUserNotNullJob.cancel()
+                endSession()
+            }
         }
     }
 

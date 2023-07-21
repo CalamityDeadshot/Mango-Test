@@ -293,4 +293,5 @@
     <string name="upload_photo">Загруить изображение</string>
     <string name="retry">Попробовать снова</string>
     <string name="user_birthday">Дата рождения</string>
+    <string name="log_out">Выйти</string>
 </resources>
