@@ -188,6 +188,9 @@ class AuthViewModel @Inject constructor(
             },
             onSuccess = {
                 registrationState = RegistrationScreenState()
+                authenticationState = AuthenticationScreenState(
+                    selectedCountry = countryDataMap[application.countryCode] ?: russia
+                )
             }
         )
         registrationState = registrationState.copy(
